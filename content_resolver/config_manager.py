@@ -98,9 +98,7 @@ class ConfigManager:
             for arch_raw in document["data"]["source"]["architectures"]:
                 arch = str(arch_raw)
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 config["source"]["architectures"].append(str(arch))
         except KeyError:
@@ -122,9 +120,7 @@ class ConfigManager:
                 config["source"]["repos"][id]["baseurl"] = repo_data["baseurl"]
             except KeyError:
                 # FIXME:  No reference for `yaml_file`
-                raise ConfigError("'{file}.yaml' - is invalid. Repo {id} doesn't list baseurl.".format(
-                    file=yml_file,
-                    id=id))
+                raise ConfigError(f"'{yml_file}.yaml' - is invalid. Repo {id} doesn't list baseurl.")
             config["source"]["repos"][id]["priority"] = priority
             config["source"]["repos"][id]["exclude"] = exclude
             config["source"]["repos"][id]["limit_arches"] = limit_arches
@@ -190,10 +186,7 @@ class ConfigManager:
         if "arch_packages" in document["data"]:
             for arch, pkgs in document["data"]["arch_packages"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 for pkg_raw in pkgs:
                     pkg = str(pkg_raw)
@@ -274,9 +267,7 @@ class ConfigManager:
                 config["packages"].append(str(pkg))
         except (TypeError, KeyError):
             pass # Because it's now valid
-            #log("  Warning: {file} has an empty 'packages' field defined which is invalid. Moving on...".format(
-            #    file=document_id
-            #))
+            #log(f"  Warning: {document_id} has an empty 'packages' field defined which is invalid. Moving on...")
 
         # Architecture-specific packages.
         config["arch_packages"] = {}
@@ -285,10 +276,7 @@ class ConfigManager:
         if "arch_packages" in document["data"]:
             for arch, pkgs in document["data"]["arch_packages"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 # This workaround allows for "arch_packages/ARCH" to be left empty in the config
                 try:
@@ -296,10 +284,7 @@ class ConfigManager:
                         pkg = str(pkg_raw)
                         config["arch_packages"][arch].append(pkg)
                 except TypeError:
-                    log("  Warning: {file} has an empty 'arch_packages/{arch}' field defined which is invalid. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id} has an empty 'arch_packages/{arch}' field defined which is invalid. Moving on...")
         
         # Extra installation options.
         # The following are now supported:
@@ -460,10 +445,7 @@ class ConfigManager:
         if "unwanted_arch_packages" in document["data"]:
             for arch, pkgs in document["data"]["unwanted_arch_packages"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 for pkg_raw in pkgs:
                     pkg = str(pkg_raw)
@@ -524,10 +506,7 @@ class ConfigManager:
         if "unwanted_arch_packages" in document["data"]:
             for arch, pkgs in document["data"]["unwanted_arch_packages"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 for pkg_raw in pkgs:
                     pkg = str(pkg_raw)
@@ -600,10 +579,7 @@ class ConfigManager:
         if "unwanted_arch_packages" in document["data"]:
             for arch, pkgs in document["data"]["unwanted_arch_packages"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 for pkg_raw in pkgs:
                     pkg = str(pkg_raw)
@@ -622,10 +598,7 @@ class ConfigManager:
         if "unwanted_arch_source_packages" in document["data"]:
             for arch, pkgs in document["data"]["unwanted_arch_source_packages"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 for pkg_raw in pkgs:
                     pkg = str(pkg_raw)
@@ -656,10 +629,7 @@ class ConfigManager:
         if "base_buildroot" in document["data"]:
             for arch, pkgs in document["data"]["base_buildroot"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 if pkgs:
                     for pkg_raw in pkgs:
@@ -672,10 +642,7 @@ class ConfigManager:
         if "source_packages" in document["data"]:
             for arch, srpms_dict in document["data"]["source_packages"].items():
                 if arch not in settings["allowed_arches"]:
-                    log("  Warning: {file}.yaml lists an unsupported architecture: {arch}. Moving on...".format(
-                        file=document_id,
-                        arch=arch
-                    ))
+                    log(f"  Warning: {document_id}.yaml lists an unsupported architecture: {arch}. Moving on...")
                     continue
                 if not srpms_dict:
                     continue
@@ -686,9 +653,7 @@ class ConfigManager:
                             for pkg_raw in srpm_data["requires"]:
                                 requires.append(str(pkg_raw))
                         except TypeError:
-                            log("  Warning: {file} has an empty 'requires' field defined which is invalid. Moving on...".format(
-                                file=document_id
-                            ))
+                            log(f"  Warning: {document_id} has an empty 'requires' field defined which is invalid. Moving on...")
                             continue
                     
                     config["source_packages"][arch][str(srpm_name)] = {}
@@ -708,10 +673,7 @@ class ConfigManager:
             # Arch
             arch = document["data"]["arch"]
             if arch not in settings["allowed_arches"]:
-                raise ConfigError("Error: '{file}.json' lists an unsupported architecture: {arch}.".format(
-                    file=document_id,
-                    arch=arch
-                ))
+                raise ConfigError(f"Error: '{document_id}.json' lists an unsupported architecture: {arch}.")
             config["arch"] = arch
 
             #pkg_relations
@@ -861,9 +823,7 @@ class ConfigManager:
                     try:
                         document = yaml.safe_load(file)
                     except yaml.YAMLError as err:
-                        raise ConfigError("Error loading a config '{filename}': {err}".format(
-                                    filename=yml_file,
-                                    err=err))
+                        raise ConfigError(f"Error loading a config '{yml_file}': {err}")
                     
                     # Only accept yaml files stating their purpose!
                     if not ("document" in document and "version" in document):
@@ -971,9 +931,7 @@ class ConfigManager:
                 try:
                     json_data = self.load_data(os.path.join(directory, json_file))
                 except:
-                    raise ConfigError("Error loading a JSON data file '{filename}': {err}".format(
-                                    filename=json_file,
-                                    err=err))
+                    raise ConfigError(f"Error loading a JSON data file '{json_file}': {err}")
                 
                 # Only accept json files stating their purpose!
                 if not ("document_type" in json_data and "version" in json_data):
