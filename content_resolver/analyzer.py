@@ -200,7 +200,7 @@ def _get_koji_log_path(srpm_id, arch, koji_session):
             koji_pkg_data = koji_session.getRPM(f"{srpm_id}.src")
             koji_logs = koji_session.getBuildLogs(koji_pkg_data["build_id"])
             break
-        except Exception:
+        except koji.GenericError:
             attempts += 1
             if attempts == max_tries:
                 raise KojiRootLogError("Could not talk to Koji API")
@@ -306,10 +306,28 @@ def process_single_srpm_root_log(work_item):
 
         # Download root.log
         root_log_url = f"{koji_files_url}/{koji_log_path}"
-        root_log_contents = _download_root_log_with_retry(root_log_url)
+        try:
+            root_log_contents = _download_root_log_with_retry(root_log_url)
+        except KojiRootLogError as e:
+            # Download failed
+            return {
+                'srpm_id': srpm_id,
+                'arch': arch,
+                'deps': [],
+                'error': f"Download failed: {str(e)}"
+            }
 
         # Parse dependencies
-        deps = _get_build_deps_from_a_root_log(root_log_contents)
+        try:
+            deps = _get_build_deps_from_a_root_log(root_log_contents)
+        except Exception as e:
+            # Parsing failed
+            return {
+                'srpm_id': srpm_id,
+                'arch': arch,
+                'deps': [],
+                'error': f"Parse failed: {str(e)}"
+            }
 
         return {
             'srpm_id': srpm_id,
