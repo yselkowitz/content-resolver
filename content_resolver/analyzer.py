@@ -1266,12 +1266,13 @@ class Analyzer:
             self.current_subprocesses -= 1
 
             # This basically means there was an exception in the processing and the process crashed
+            # or timed out (222 seconds total timeout)
             if queue_result.empty():
                 log("")
                 log("")
                 log("--------------------------------------------------------------------------")
                 log("")
-                log("ERROR: Workload analysis failed")
+                log("WARNING: Workload analysis timed out or crashed")
                 log("")
                 log("Details:")
                 log(f"  workload_conf: {workload_conf['id']}")
@@ -1279,16 +1280,38 @@ class Analyzer:
                 log(f"  repo:          {repo['id']}")
                 log(f"  arch:          {arch}")
                 log("")
-                log("More details somewhere above.")
+                log("Creating failed workload entry and continuing...")
                 log("")
                 log("--------------------------------------------------------------------------")
                 log("")
                 log("")
-                sys.exit(1)
-        
-            workload = queue_result.get()
-            
-            results[workload_id] = workload
+
+                # Create a failed workload result instead of crashing
+                workload = {}
+                workload["workload_conf_id"] = workload_conf["id"]
+                workload["env_conf_id"] = env_conf["id"]
+                workload["repo_id"] = repo["id"]
+                workload["arch"] = arch
+                workload["pkg_env_ids"] = []
+                workload["pkg_added_ids"] = []
+                workload["pkg_placeholder_ids"] = []
+                workload["srpm_placeholder_names"] = []
+                workload["pkg_relations"] = []
+                workload["errors"] = {}
+                workload["errors"]["non_existing_pkgs"] = []
+                workload["errors"]["non_existing_placeholder_deps"] = []
+                workload["errors"]["message"] = f"Workload analysis timed out after 222 seconds or subprocess crashed"
+                workload["warnings"] = {}
+                workload["warnings"]["non_existing_pkgs"] = []
+                workload["warnings"]["non_existing_placeholder_deps"] = []
+                workload["warnings"]["message"] = None
+                workload["succeeded"] = False
+                workload["env_succeeded"] = False
+                workload["labels"] = list(set(workload_conf["labels"]) & set(env_conf["labels"]))
+                results[workload_id] = workload
+            else:
+                workload = queue_result.get()
+                results[workload_id] = workload
 
 
     async def _analyze_workloads_async(self, results):
